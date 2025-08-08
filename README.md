@@ -79,3 +79,40 @@ You must provide your own OpenAI API key with available quota in `backend-proxy.
 - The OpenAI API key is kept secret in the backend proxy and **never exposed to the frontend**.
 - The AI Smart Search feature assumes the OpenAI API key used has sufficient quota and access to the GPT-3.5-turbo model.
 - The backend proxy only exposes a single `/openai` POST endpoint for forwarding requests to OpenAI.
+
+## REATE backend file (backend-proxy.js) to use with your open API key##
+
+const express = require("express");
+const cors = require("cors");
+const fetch = require("node-fetch");
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+app.post("/openai", async (req, res) => {
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer ADD_YOUR_KEY_HERE"
+      },
+      body: JSON.stringify(req.body),
+    });
+    const data = await response.json();
+    console.log("OpenAI response:", data); 
+    if (!response.ok) {
+      return res.status(response.status).json(data);
+    }
+    res.json(data);
+  } catch (err) {
+    console.error("Proxy error:", err); 
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.listen(5001, () => console.log("Proxy running on port 5001"));
+
+## Run commands bellow##
+npm install express cors node-fetch@2
+node backend-proxy.js (it should run in localhost 5001 or any other that is awailable on your local mashine)
