@@ -1,18 +1,11 @@
-# Ignore ALL backend-related folders and files
-api
-api/
-auth-backend
+# Ignore original backend folders (if they exist)
 auth-backend/
-backend
 backend/
 
-# Ignore specific backend files
-*.server.js
-**/server.js
-**/routes/**
-**/controllers/**
-**/models/**
-**/middlewares/**
+# Node modules and build files
+node_modules/
+.env
+.env.local
 
-# Only deploy frontend
-# Everything else is ignored by default
+# Only allow our single API endpoint
+!api/[...endpoint].js
