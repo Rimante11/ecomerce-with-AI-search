@@ -1,48 +1,95 @@
-import React from 'react'
+
+import React, { useState } from 'react';
 import { Footer, Navbar } from "../components";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+
 const Register = () => {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError("");
+        setSuccess("");
+        try {
+            const res = await fetch("http://localhost:5050/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name, email, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setSuccess("Registration successful! You can now login.");
+                setName("");
+                setEmail("");
+                setPassword("");
+                setTimeout(() => navigate("/login"), 1500);
+            } else {
+                setError(data.message || "Registration failed");
+            }
+        } catch (err) {
+            setError("Server error. Please try again later.");
+        }
+    };
+
     return (
         <>
             <Navbar />
             <div className="container my-3 py-3">
                 <h1 className="text-center">Register</h1>
                 <hr />
-                <div class="row my-4 h-100">
+                <div className="row my-4 h-100">
                     <div className="col-md-4 col-lg-4 col-sm-8 mx-auto">
-                        <form>
-                            <div class="form my-3">
-                                <label for="Name">Full Name</label>
+                        <form onSubmit={handleSubmit}>
+                            <div className="form my-3">
+                                <label htmlFor="Name">Full Name</label>
                                 <input
-                                    type="email"
-                                    class="form-control"
+                                    type="text"
+                                    className="form-control"
                                     id="Name"
                                     placeholder="Enter Your Name"
+                                    value={name}
+                                    onChange={e => setName(e.target.value)}
+                                    required
                                 />
                             </div>
-                            <div class="form my-3">
-                                <label for="Email">Email address</label>
+                            <div className="form my-3">
+                                <label htmlFor="Email">Email address</label>
                                 <input
                                     type="email"
-                                    class="form-control"
+                                    className="form-control"
                                     id="Email"
                                     placeholder="name@example.com"
+                                    value={email}
+                                    onChange={e => setEmail(e.target.value)}
+                                    required
                                 />
                             </div>
-                            <div class="form  my-3">
-                                <label for="Password">Password</label>
+                            <div className="form my-3">
+                                <label htmlFor="Password">Password</label>
                                 <input
                                     type="password"
-                                    class="form-control"
+                                    className="form-control"
                                     id="Password"
                                     placeholder="Password"
+                                    value={password}
+                                    onChange={e => setPassword(e.target.value)}
+                                    required
                                 />
                             </div>
+                            {error && <div className="alert alert-danger">{error}</div>}
+                            {success && <div className="alert alert-success">{success}</div>}
                             <div className="my-3">
                                 <p>Already has an account? <Link to="/login" className="text-decoration-underline text-info">Login</Link> </p>
                             </div>
                             <div className="text-center">
-                                <button class="my-2 mx-auto btn btn-dark" type="submit" disabled>
+                                <button className="my-2 mx-auto btn btn-dark" type="submit">
                                     Register
                                 </button>
                             </div>
@@ -52,7 +99,7 @@ const Register = () => {
             </div>
             <Footer />
         </>
-    )
-}
+    );
+};
 
-export default Register
+export default Register;

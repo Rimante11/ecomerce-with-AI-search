@@ -1,0 +1,208 @@
+.clothes-card-img{
+    width: 65%;
+    margin-left: 70px;
+}
+
+/* Category Links Styling */
+.category-links-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 0;
+}
+
+.category-links {
+    display: flex;
+    gap: 60px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.category-link {
+    font-family: 'Maison Neue', 'Arial', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 2px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    text-transform: uppercase;
+    padding: 10px 0;
+}
+
+.category-link:hover {
+    color: #000;
+    transform: translateY(-2px);
+}
+
+.category-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: #333;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.category-link:hover::after {
+    width: 100%;
+}
+
+/* Product Card Styling */
+.product-card {
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.product-image-container {
+    width: 100%;
+    height: 400px;
+    overflow: hidden;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.product-info {
+    padding: 20px 15px;
+    text-align: center;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.product-title {
+    font-family: 'Maison Neue', 'Arial', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    color: #333;
+    margin-bottom: 10px;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-price {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 20px;
+}
+
+.product-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.btn-custom {
+    padding: 12px 20px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    border-radius: 0;
+}
+
+.btn-primary-custom {
+    background-color: #000;
+    color: #fff;
+}
+
+.btn-primary-custom:hover {
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+}
+
+.btn-secondary-custom {
+    background-color: transparent;
+    color: #000;
+    border: 2px solid #000;
+}
+
+.btn-secondary-custom:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .category-links {
+        gap: 30px;
+        flex-direction: column;
+    }
+    
+    .category-link {
+        font-size: 16px;
+        letter-spacing: 1.5px;
+    }
+    
+    .product-image-container {
+        height: 300px;
+    }
+    
+    .product-info {
+        padding: 15px 10px;
+    }
+    
+    .product-buttons {
+        gap: 8px;
+    }
+    
+    .btn-custom {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+}
+
+.button-buy-now {
+   background-color: #887960; 
+}
+
+.button-buy-now:hover,
+.button-add-cart:hover {
+    background-color: #5d5241;
+}
+
+.button-add-cart {
+   color: #887960;
+   border: 1px solid #887960; 
+}

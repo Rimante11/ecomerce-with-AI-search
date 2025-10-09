@@ -8,6 +8,8 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 
+import "../styles/products.css";
+
 const Products = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState(data);
@@ -23,10 +25,16 @@ const Products = () => {
   useEffect(() => {
     const getProducts = async () => {
       setLoading(true);
-      const response = await fetch("https://fakestoreapi.com/products/");
-      if (componentMounted) {
-        setData(await response.clone().json());
-        setFilter(await response.json());
+      try {
+        const response = await fetch("/data/products.json");
+        if (componentMounted) {
+          const products = await response.json();
+          setData(products);
+          setFilter(products);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
         setLoading(false);
       }
 
@@ -74,37 +82,33 @@ const Products = () => {
   const ShowProducts = () => {
     return (
       <>
-        <div className="buttons text-center py-5">
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => setFilter(data)}
-          >
-            All
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("men's clothing")}
-          >
-            Men's Clothing
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("women's clothing")}
-          >
-            Women's Clothing
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("jewelery")}
-          >
-            Jewelery
-          </button>
-          <button
-            className="btn btn-outline-dark btn-sm m-2"
-            onClick={() => filterProduct("electronics")}
-          >
-            Electronics
-          </button>
+        <div className="category-links-container py-5">
+          <div className="category-links">
+            <div 
+              className="category-link"
+              onClick={() => setFilter(data)}
+            >
+              ALL PRODUCTS
+            </div>
+            <div 
+              className="category-link"
+              onClick={() => filterProduct("men's clothing")}
+            >
+              Men
+            </div>
+            <div 
+              className="category-link"
+              onClick={() => filterProduct("women's clothing")}
+            >
+              Women
+            </div>
+            <div 
+              className="category-link"
+              onClick={() => filterProduct("footwear")}
+            >
+              FOOTWEAR
+            </div>
+          </div>
         </div>
 
         {filter.map((product) => {
@@ -112,44 +116,43 @@ const Products = () => {
             <div
               id={product.id}
               key={product.id}
-              className="col-md-4 col-sm-6 col-xs-8 col-12 mb-4"
+              className="col-md-4 col-sm-6 col-xs-8 col-12 mb-5"
             >
-              <div className="card text-center h-100" key={product.id}>
-                <img
-                  className="card-img-top p-3"
-                  src={product.image}
-                  alt="Card"
-                  height={300}
-                />
-                <div className="card-body">
-                  <h5 className="card-title">
-                    {product.title.substring(0, 12)}...
-                  </h5>
-                  <p className="card-text">
-                    {product.description.substring(0, 90)}...
-                  </p>
-                </div>
-                <ul className="list-group list-group-flush">
-                  <li className="list-group-item lead">$ {product.price}</li>
-                  {/* <li className="list-group-item">Dapibus ac facilisis in</li>
-                    <li className="list-group-item">Vestibulum at eros</li> */}
-                </ul>
-                <div className="card-body">
-                  <Link
-                    to={"/product/" + product.id}
-                    className="btn btn-dark m-1"
-                  >
-                    Buy Now
-                  </Link>
-                  <button
-                    className="btn btn-dark m-1"
-                    onClick={() => {
-                      toast.success("Added to cart");
-                      addProduct(product);
+              <div className="product-card" key={product.id}>
+                <div className="product-image-container">
+                  <img
+                    className="product-image"
+                    src={product.image?.startsWith('/') ? product.image : `/${product.image}`}
+                    alt={product.title}
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/400x500?text=" + encodeURIComponent(product.title);
                     }}
-                  >
-                    Add to Cart
-                  </button>
+                  />
+                </div>
+                <div className="product-info">
+                  <h5 className="product-title">
+                    {product.title}
+                  </h5>
+                  <p className="product-price">
+                    ${product.price}
+                  </p>
+                  <div className="product-buttons">
+                    <Link
+                      to={"/product/" + product.id}
+                      className="btn-custom btn-primary-custom button-buy-now "
+                    >
+                      Buy Now
+                    </Link>
+                    <button
+                      className="btn-custom btn-secondary-custom button-add-cart"
+                      onClick={() => {
+                        toast.success("Added to cart");
+                        addProduct(product);
+                      }}
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -160,10 +163,10 @@ const Products = () => {
   };
   return (
     <>
-      <div className="container my-3 py-3">
+      <div className="container my-3 py-3 products-container">
         <div className="row">
           <div className="col-12">
-            <h2 className="display-5 text-center">Latest Products</h2>
+            <h3 className="display-4 text-center heading-3">Shop By Category</h3>
             <hr />
           </div>
         </div>

@@ -24,16 +24,30 @@ const Product = () => {
     const getProduct = async () => {
       setLoading(true);
       setLoading2(true);
-      const response = await fetch(`https://fakestoreapi.com/products/${id}`);
-      const data = await response.json();
-      setProduct(data);
-      setLoading(false);
-      const response2 = await fetch(
-        `https://fakestoreapi.com/products/category/${data.category}`
-      );
-      const data2 = await response2.json();
-      setSimilarProducts(data2);
-      setLoading2(false);
+      try {
+        // Fetch all products from local JSON
+        const response = await fetch("/data/products.json");
+        const allProducts = await response.json();
+        
+        // Find the specific product by ID
+        const foundProduct = allProducts.find(product => product.id === parseInt(id));
+        if (foundProduct) {
+          setProduct(foundProduct);
+          
+          // Find similar products by category
+          const similarItems = allProducts.filter(
+            product => product.category === foundProduct.category && product.id !== foundProduct.id
+          );
+          setSimilarProducts(similarItems);
+        }
+        
+        setLoading(false);
+        setLoading2(false);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+        setLoading(false);
+        setLoading2(false);
+      }
     };
     getProduct();
   }, [id]);
@@ -69,10 +83,13 @@ const Product = () => {
             <div className="col-md-6 col-sm-12 py-3">
               <img
                 className="img-fluid"
-                src={product.image}
+                src={product.image?.startsWith('/') ? product.image : `/${product.image}`}
                 alt={product.title}
                 width="400px"
                 height="400px"
+                onError={(e) => {
+                  e.target.src = '/assets/images/placeholder.png';
+                }}
               />
             </div>
             <div className="col-md-6 col-md-6 py-5">
@@ -133,10 +150,13 @@ const Product = () => {
                 <div key={item.id} className="card mx-4 text-center">
                   <img
                     className="card-img-top p-3"
-                    src={item.image}
+                    src={item.image?.startsWith('/') ? item.image : `/${item.image}`}
                     alt="Card"
                     height={300}
                     width={300}
+                    onError={(e) => {
+                      e.target.src = '/assets/images/placeholder.png';
+                    }}
                   />
                   <div className="card-body">
                     <h5 className="card-title">
