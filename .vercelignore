@@ -1,11 +1,18 @@
-# Ignore original backend folders (if they exist)
-auth-backend/
-backend/
+# Ignore everything except what we explicitly need
+*
 
-# Node modules and build files
-node_modules/
-.env
-.env.local
-
-# Only allow our single API endpoint
+# Allow only essential files
+!package.json
+!package-lock.json
+!public/**
+!src/**
 !api/[...endpoint].js
+!vercel.json
+!README.md
+
+# Ignore all potential function files
+**/*.server.js
+**/server.js
+auth-backend/**
+backend/**
+_*/**
