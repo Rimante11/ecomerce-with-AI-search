@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const Navbar = () => {
@@ -8,6 +8,10 @@ const Navbar = () => {
     const [showDropdown, setShowDropdown] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    
+    // Check if we're on the home page
+    const isHomePage = location.pathname === '/';
 
     // Handle scroll effect
     useEffect(() => {
@@ -51,7 +55,9 @@ const Navbar = () => {
     };
 
     return (
-        <nav className={`navbar navbar-expand-lg py-3 fixed-top transition-navbar ${scrolled ? 'navbar-scrolled' : 'navbar-transparent'}`}>
+        <nav className={`navbar navbar-expand-lg py-3 fixed-top transition-navbar ${
+            !isHomePage || scrolled ? 'navbar-scrolled' : 'navbar-transparent'
+        }`}>
             <div className="container">
                 <NavLink className="navbar-brand fw-bold fs-4 px-2" to="/"> Artlist</NavLink>
                 <button className="navbar-toggler mx-2" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
