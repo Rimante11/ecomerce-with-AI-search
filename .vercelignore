@@ -1,13 +1,18 @@
-# Vercel Deployment Configuration
-# This file tells Vercel to ignore backend files and deploy only the frontend
-
-# Ignore all API routes to stay under the 12 function limit
+# Ignore ALL backend-related folders and files
+api
 api/
+auth-backend
 auth-backend/
+backend
 backend/
 
-# Keep only the React frontend
-!src/
-!public/
-!package.json
-!package-lock.json
+# Ignore specific backend files
+*.server.js
+**/server.js
+**/routes/**
+**/controllers/**
+**/models/**
+**/middlewares/**
+
+# Only deploy frontend
+# Everything else is ignored by default
