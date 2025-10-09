@@ -27,10 +27,9 @@ const Products = () => {
     const getProducts = async () => {
       setLoading(true);
       try {
-        const response = await fetch("/api/products");
+        const response = await fetch("/data/products.json");
         if (componentMounted) {
-          const result = await response.json();
-          const products = result.data || result || []; // Handle both formats and ensure array
+          const products = await response.json();
           
           // Ensure products is an array
           const productsArray = Array.isArray(products) ? products : [];
