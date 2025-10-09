@@ -14,7 +14,6 @@ const Products = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState(data);
   const [loading, setLoading] = useState(false);
-  let componentMounted = true;
 
   const dispatch = useDispatch();
 
@@ -23,6 +22,8 @@ const Products = () => {
   };
 
   useEffect(() => {
+    let componentMounted = true;
+    
     const getProducts = async () => {
       setLoading(true);
       try {
@@ -36,15 +37,17 @@ const Products = () => {
         }
       } catch (error) {
         console.error("Error fetching products:", error);
-        setLoading(false);
+        if (componentMounted) {
+          setLoading(false);
+        }
       }
-
-      return () => {
-        componentMounted = false;
-      };
     };
 
     getProducts();
+
+    return () => {
+      componentMounted = false;
+    };
   }, []);
 
   const Loading = () => {

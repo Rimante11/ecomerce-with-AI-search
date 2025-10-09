@@ -3,7 +3,7 @@ import React, { useState } from "react";
 function BankIDLogin() {
   const [pnr, setPnr] = useState("");
   const [status, setStatus] = useState(null);
-  const [orderRef, setOrderRef] = useState(null);
+  const [, setOrderRef] = useState(null);
 
   const startAuth = async () => {
     setStatus("Starting authentication...");
