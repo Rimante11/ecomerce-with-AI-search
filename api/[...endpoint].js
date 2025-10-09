@@ -12,11 +12,37 @@ let users = [];
 const getProducts = () => {
   if (!products) {
     try {
-      const productsPath = join(process.cwd(), 'public', 'data', 'products.json');
+      // Try to load from api directory first (for Vercel serverless)
+      const apiPath = join(process.cwd(), 'api', 'products.json');
+      const publicPath = join(process.cwd(), 'public', 'data', 'products.json');
+      
+      let productsPath = apiPath;
+      
+      // Check which path exists
+      if (require('fs').existsSync(apiPath)) {
+        productsPath = apiPath;
+      } else if (require('fs').existsSync(publicPath)) {
+        productsPath = publicPath;
+      }
+      
+      console.log('Loading products from:', productsPath);
       products = JSON.parse(readFileSync(productsPath, 'utf8'));
+      console.log('Products loaded successfully, count:', products.length);
     } catch (error) {
       console.error('Error loading products:', error);
-      return [];
+      console.error('Current working directory:', process.cwd());
+      // Return fallback data if file loading fails
+      products = [
+        {
+          id: 1,
+          title: "Sample Product",
+          price: 29.99,
+          description: "This is a sample product while we load the full catalog.",
+          category: "men's clothing",
+          image: "/assets/images/placeholder.png",
+          rating: { rate: 4.5, count: 100 }
+        }
+      ];
     }
   }
   return products;

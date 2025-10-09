@@ -12,7 +12,7 @@ import "../styles/products.css";
 
 const Products = () => {
   const [data, setData] = useState([]);
-  const [filter, setFilter] = useState(data);
+  const [filter, setFilter] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
@@ -30,9 +30,13 @@ const Products = () => {
         const response = await fetch("/api/products");
         if (componentMounted) {
           const result = await response.json();
-          const products = result.data || result; // Handle both formats
-          setData(products);
-          setFilter(products);
+          const products = result.data || result || []; // Handle both formats and ensure array
+          
+          // Ensure products is an array
+          const productsArray = Array.isArray(products) ? products : [];
+          
+          setData(productsArray);
+          setFilter(productsArray);
           setLoading(false);
         }
       } catch (error) {
