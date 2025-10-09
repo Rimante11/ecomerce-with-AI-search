@@ -1,18 +1,17 @@
-# Ignore everything except what we explicitly need
-*
+# Ignore backend-related folders that might be detected as functions
+auth-backend/
+backend/
+_*/**
 
-# Allow only essential files
-!package.json
-!package-lock.json
-!public/**
-!src/**
-!api/[...endpoint].js
-!vercel.json
-!README.md
-
-# Ignore all potential function files
+# Ignore specific backend files
 **/*.server.js
 **/server.js
-auth-backend/**
-backend/**
-_*/**
+**/controllers/
+**/routes/
+**/models/
+**/middlewares/
+
+# Standard ignores
+node_modules/
+.env
+.env.local
