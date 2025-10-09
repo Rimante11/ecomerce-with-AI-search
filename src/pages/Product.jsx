@@ -25,9 +25,10 @@ const Product = () => {
       setLoading(true);
       setLoading2(true);
       try {
-        // Fetch all products from local JSON
-        const response = await fetch("/data/products.json");
-        const allProducts = await response.json();
+        // Fetch all products from API
+        const response = await fetch("/api/products");
+        const result = await response.json();
+        const allProducts = result.data || result;
         
         // Find the specific product by ID
         const foundProduct = allProducts.find(product => product.id === parseInt(id));

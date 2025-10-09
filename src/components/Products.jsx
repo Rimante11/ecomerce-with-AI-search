@@ -26,9 +26,10 @@ const Products = () => {
     const getProducts = async () => {
       setLoading(true);
       try {
-        const response = await fetch("/data/products.json");
+        const response = await fetch("/api/products");
         if (componentMounted) {
-          const products = await response.json();
+          const result = await response.json();
+          const products = result.data || result; // Handle both formats
           setData(products);
           setFilter(products);
           setLoading(false);

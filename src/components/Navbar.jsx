@@ -29,7 +29,7 @@ const Navbar = () => {
             } catch {}
         }
         if (email) {
-            fetch(`http://localhost:5050/api/auth/user/${email}`)
+            fetch(`/api/auth/user/${email}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.name && data.email) {
