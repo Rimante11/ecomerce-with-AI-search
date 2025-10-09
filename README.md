@@ -116,3 +116,4 @@ app.listen(5001, () => console.log("Proxy running on port 5001"));
 ## Run commands bellow##
 npm install express cors node-fetch@2
 node backend-proxy.js (it should run in localhost 5001 or any other that is awailable on your local mashine)
+# Force deployment
