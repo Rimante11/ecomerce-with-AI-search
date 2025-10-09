@@ -1,20 +1,6 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "functions": {},
-  "trailingSlash": false
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "framework": null,
+  "installCommand": "npm install"
 }
