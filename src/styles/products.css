@@ -166,12 +166,30 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
+    /* Mobile category section styling */
+    .products-container {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .heading-3 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .category-links-container {
+        padding: 20px 0;
+        margin-top: -80px;
+    }
+    
     .category-links {
         gap: 15px;
         flex-direction: row;
         justify-content: center;
         align-items: center;
         flex-wrap: nowrap;
+        margin-bottom: 2rem;
     }
     
     .category-link {
@@ -179,6 +197,22 @@
         letter-spacing: 1px;
         padding: 8px 12px;
         white-space: nowrap;
+    }
+    
+    /* Mobile products grid - force single column */
+    .row.justify-content-center {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+    
+    .col-md-4.col-sm-6.col-xs-8.col-12 {
+        flex: none !important;
+        max-width: 350px !important;
+        width: 100% !important;
+        margin-bottom: 2rem !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
     }
     
     .product-image-container {
@@ -197,10 +231,22 @@
         padding: 10px 15px;
         font-size: 13px;
     }
+    
+    /* Force single column layout - override Bootstrap */
+    .products-container .row > div[class*="col-"] {
+        flex: 0 0 100% !important;
+        max-width: 350px !important;
+        width: 100% !important;
+        margin: 0 auto 2rem auto !important;
+    }
 }
 
 /* Extra small mobile devices */
 @media (max-width: 480px) {
+    .heading-3 {
+        font-size: 1.75rem;
+    }
+    
     .category-links {
         gap: 10px;
     }
@@ -209,6 +255,21 @@
         font-size: 12px;
         letter-spacing: 0.5px;
         padding: 6px 8px;
+    }
+    
+    .col-md-4.col-sm-6.col-xs-8.col-12 {
+        max-width: 320px !important;
+    }
+    
+    /* Ensure single column layout on very small screens */
+    .products-container .row {
+        flex-direction: column !important;
+    }
+    
+    .products-container .row > div {
+        width: 100% !important;
+        max-width: 320px !important;
+        flex: none !important;
     }
 }
 

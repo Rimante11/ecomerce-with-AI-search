@@ -164,7 +164,7 @@ const Products = () => {
   };
   return (
     <>
-      <div className="container my-3 py-3 products-container">
+      <div id="shop-by-category" className="container my-3 py-3 products-container">
         <div className="row">
           <div className="col-12">
             <h3 className="display-4 text-center heading-3">Shop By Category</h3>

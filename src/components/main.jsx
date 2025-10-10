@@ -2,6 +2,16 @@ import React from "react";
 import "../styles/hero.css";
 
 const Home = () => {
+  const scrollToProducts = () => {
+    const element = document.getElementById('shop-by-category');
+    if (element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <>
       <div className="hero-fullscreen">
@@ -19,6 +29,9 @@ const Home = () => {
               <p className="hero-subtitle">
                 Wrap yourself in comfort — where style meets softness.
               </p>
+              <button className="hero-button" onClick={scrollToProducts}>
+                Discover Collection
+              </button>
             </div>
           </div>
         </div>
