@@ -240,5 +240,18 @@
     "rate": 3.6,
     "count": 145
     }
+    },
+    {
+    "id": 21,
+    "title": "Mens Slim Fit Sshirt",
+    "price": 22.3,
+    "description": "The shirt is made from a soft and comfortable cotton blend, making it perfect for everyday wear.",
+    "category": "men's clothing",
+    "image": "assets/images/shirt-two-men.jpg",
+    "rating": 
+        {
+            "rate": 4.1,
+            "count": 259
+        }
     }
 ]

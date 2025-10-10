@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Footer, Navbar } from "../components";
+import '../styles/layout.css';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -39,9 +40,10 @@ const Login = () => {
   };
 
   return (
-    <>
+    <div className="page-wrapper">
       <Navbar />
-      <div className="container my-3 py-3">
+      <div className="page-content">
+        <div className="container my-3 py-3">
         <h1 className="text-center">Login</h1>
         <hr />
         <div className="row my-4 h-100">
@@ -84,9 +86,10 @@ const Login = () => {
             </form>
           </div>
         </div>
+        </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 

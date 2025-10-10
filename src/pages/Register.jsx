@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Footer, Navbar } from "../components";
 import { Link, useNavigate } from 'react-router-dom';
+import '../styles/layout.css';
 
 const Register = () => {
     const [name, setName] = useState("");
@@ -39,9 +40,10 @@ const Register = () => {
     };
 
     return (
-        <>
+        <div className="page-wrapper">
             <Navbar />
-            <div className="container my-3 py-3">
+            <div className="page-content">
+                <div className="container my-3 py-3">
                 <h1 className="text-center">Register</h1>
                 <hr />
                 <div className="row my-4 h-100">
@@ -96,9 +98,10 @@ const Register = () => {
                         </form>
                     </div>
                 </div>
+                </div>
             </div>
             <Footer />
-        </>
+        </div>
     );
 };
 

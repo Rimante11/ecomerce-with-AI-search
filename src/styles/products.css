@@ -63,6 +63,7 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 }
 
 .product-card:hover {
@@ -101,7 +102,7 @@
     justify-content: space-between;
 }
 
-.product-title {
+.product-title-all {
     font-family: 'Maison Neue', 'Arial', sans-serif;
     font-size: 16px;
     font-weight: 400;
@@ -114,7 +115,7 @@
 
 .product-price {
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 300;
     color: #000;
     margin-bottom: 20px;
 }
@@ -166,13 +167,18 @@
 /* Responsive design */
 @media (max-width: 768px) {
     .category-links {
-        gap: 30px;
-        flex-direction: column;
+        gap: 15px;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: nowrap;
     }
     
     .category-link {
-        font-size: 16px;
-        letter-spacing: 1.5px;
+        font-size: 14px;
+        letter-spacing: 1px;
+        padding: 8px 12px;
+        white-space: nowrap;
     }
     
     .product-image-container {
@@ -193,6 +199,19 @@
     }
 }
 
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+    .category-links {
+        gap: 10px;
+    }
+    
+    .category-link {
+        font-size: 12px;
+        letter-spacing: 0.5px;
+        padding: 6px 8px;
+    }
+}
+
 .button-buy-now {
    background-color: #887960; 
 }
@@ -205,4 +224,11 @@
 .button-add-cart {
    color: #887960;
    border: 1px solid #887960; 
+}
+
+@media (max-width: 576px) {
+    .heading-3{
+        font-size: 24px;
+        font-family: 'Maison Neue', 'Arial', sans-serif;;
+    }
 }

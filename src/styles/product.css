@@ -1,0 +1,42 @@
+.product-category-name {
+    font-family: 'Maison Neue', 'Arial', sans-serif;
+    font-size: 16px;
+}
+
+.product-title {
+    font-family: 'Maison Neue', 'Arial', sans-serif;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.btn-go-to-cart {
+    background-color: #887960; 
+    border: 1px solid #887960;
+
+}
+
+.btn-add-cart {
+    color: #887960; 
+    border: 1px solid #887960;
+    background-color: transparent;
+}
+
+.btn-add-cart:hover,
+.btn-go-to-cart:hover {
+    background-color: #5d5241;
+}
+
+.btn-add{
+    background-color: #887960; 
+    border: 1px solid #887960;
+}
+
+.btn-add:hover{
+    background-color: #5d5241;
+}
+
+.recommended-title{
+    font-family: 'Maison Neue', 'Arial', sans-serif;
+    font-size: 32px;
+    margin-bottom: 20px;
+}

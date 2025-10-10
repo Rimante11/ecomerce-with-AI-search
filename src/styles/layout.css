@@ -1,0 +1,77 @@
+/* Layout for pages with minimal content - footer visible immediately */
+.page-wrapper-compact {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.page-wrapper-compact .page-content {
+    /* Content takes only the space it needs */
+    flex-shrink: 0;
+}
+
+.page-wrapper-compact > footer {
+    margin-top: auto; /* Push footer to bottom */
+}
+
+/* Layout for pages with variable content - standard behavior */
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.page-content {
+    flex: 1 0 auto;
+}
+
+.page-wrapper > footer {
+    flex-shrink: 0;
+}
+
+/* Footer styling */
+.footer-text {
+    font-weight: 300;
+    text-decoration: none;
+}
+
+.footer-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 300;
+}
+
+.footer-link:hover {
+    color: #f8f9fa;
+}
+
+/* Mobile responsive footer */
+@media (max-width: 768px) {
+    .footer-text,
+    .footer-link {
+        font-size: 12px;
+    }
+
+    .footer-container {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+    }
+    
+    .footer-container > .col-md-6 {
+        flex: none !important;
+        width: auto !important;
+        max-width: none !important;
+    }
+    
+    /* Ensure footer text and link stay on same line */
+    .footer-text {
+        margin-bottom: 0 !important;
+        white-space: nowrap;
+    }
+    
+    .footer-link {
+        white-space: nowrap;
+    }
+}

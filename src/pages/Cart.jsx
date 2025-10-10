@@ -3,6 +3,7 @@ import { Footer, Navbar } from "../components";
 import { useSelector, useDispatch } from "react-redux";
 import { addCart, delCart } from "../redux/action";
 import { Link } from "react-router-dom";
+import '../styles/layout.css';
 
 const Cart = () => {
   const state = useSelector((state) => state.handleCart);
@@ -162,15 +163,17 @@ const Cart = () => {
   };
 
   return (
-    <>
+    <div className="page-wrapper">
       <Navbar />
-      <div className="container my-3 py-3">
-        <h1 className="text-center">Cart</h1>
-        <hr />
-        {state.length > 0 ? <ShowCart /> : <EmptyCart />}
+      <div className="page-content">
+        <div className="container my-3 py-3">
+          <h1 className="text-center">Cart</h1>
+          <hr />
+          {state.length > 0 ? <ShowCart /> : <EmptyCart />}
+        </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 

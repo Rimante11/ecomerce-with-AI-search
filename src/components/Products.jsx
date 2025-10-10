@@ -95,7 +95,7 @@ const Products = () => {
               className="category-link"
               onClick={() => setFilter(data)}
             >
-              ALL PRODUCTS
+              All Products
             </div>
             <div 
               className="category-link"
@@ -108,12 +108,6 @@ const Products = () => {
               onClick={() => filterProduct("women's clothing")}
             >
               Women
-            </div>
-            <div 
-              className="category-link"
-              onClick={() => filterProduct("footwear")}
-            >
-              FOOTWEAR
             </div>
           </div>
         </div>
@@ -137,11 +131,11 @@ const Products = () => {
                   />
                 </div>
                 <div className="product-info">
-                  <h5 className="product-title">
+                  <h5 className="product-title-all">
                     {product.title}
                   </h5>
                   <p className="product-price">
-                    ${product.price}
+                    {product.price} $ 
                   </p>
                   <div className="product-buttons">
                     <Link

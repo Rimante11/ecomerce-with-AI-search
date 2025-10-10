@@ -1,0 +1,56 @@
+/* Common Page Layout Styles */
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.page-content {
+    flex: 1;
+}
+
+/* Privacy Policy Page Styles */
+.privacy-policy-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: calc(100vh - 160px); /* Subtract navbar and footer height */
+}
+
+.privacy-policy-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.privacy-policy-content {
+    flex: 1;
+}
+
+.privacy-policy-title{
+    text-align: center;
+    margin: 40px 0px;
+}
+
+.privacy-policy-container h3 {
+    color: #333;
+}
+
+.privacy-policy-container h4 {
+    color: #555;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.privacy-policy-container p {
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.privacy-policy-container ul {
+    margin-bottom: 15px;
+}
+
+.privacy-policy-container li {
+    margin-bottom: 5px;
+    line-height: 1.5;
+}

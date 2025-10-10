@@ -4,8 +4,8 @@ import { Link, useParams } from "react-router-dom";
 import Marquee from "react-fast-marquee";
 import { useDispatch } from "react-redux";
 import { addCart } from "../redux/action";
-
 import { Footer, Navbar } from "../components";
+import "../styles/product.css";
 
 const Product = () => {
   const { id } = useParams();
@@ -25,21 +25,28 @@ const Product = () => {
       setLoading(true);
       setLoading2(true);
       try {
-        // Fetch all products from API
-        const response = await fetch("/api/products");
-        const result = await response.json();
-        const allProducts = result.data || result;
+        // Fetch all products from JSON file in public directory
+        const response = await fetch("/data/products.json");
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const allProducts = await response.json();
         
         // Find the specific product by ID
         const foundProduct = allProducts.find(product => product.id === parseInt(id));
         if (foundProduct) {
           setProduct(foundProduct);
+          console.log("Found Product:", foundProduct);
           
           // Find similar products by category
           const similarItems = allProducts.filter(
             product => product.category === foundProduct.category && product.id !== foundProduct.id
           );
           setSimilarProducts(similarItems);
+        } else {
+          console.error("Product not found with ID:", id);
         }
         
         setLoading(false);
@@ -94,8 +101,8 @@ const Product = () => {
               />
             </div>
             <div className="col-md-6 col-md-6 py-5">
-              <h4 className="text-uppercase text-muted">{product.category}</h4>
-              <h1 className="display-5">{product.title}</h1>
+              <h4 className="text-uppercase text-muted product-category-name">{product.category}</h4>
+              <h3 className="display-5 product-title">{product.title}</h3>
               <p className="lead">
                 {product.rating && product.rating.rate}{" "}
                 <i className="fa fa-star"></i>
@@ -103,12 +110,12 @@ const Product = () => {
               <h3 className="display-6  my-4">${product.price}</h3>
               <p className="lead">{product.description}</p>
               <button
-                className="btn btn-outline-dark"
+                className="btn btn-outline-dark btn-add-cart"
                 onClick={() => addProduct(product)}
               >
                 Add to Cart
               </button>
-              <Link to="/cart" className="btn btn-dark mx-3">
+              <Link to="/cart" className="btn btn-dark mx-3 btn-go-to-cart">
                 Go to Cart
               </Link>
             </div>
@@ -170,12 +177,12 @@ const Product = () => {
                   <div className="card-body">
                     <Link
                       to={"/product/" + item.id}
-                      className="btn btn-dark m-1"
+                      className="btn btn-dark m-1 btn-add-now btn-add"
                     >
                       Buy Now
                     </Link>
                     <button
-                      className="btn btn-dark m-1"
+                      className="btn btn-dark m-1 btn-add-cart"
                       onClick={() => addProduct(item)}
                     >
                       Add to Cart
@@ -196,7 +203,7 @@ const Product = () => {
         <div className="row">{loading ? <Loading /> : <ShowProduct />}</div>
         <div className="row my-5 py-5">
           <div className="d-none d-md-block">
-          <h2 className="">You may also Like</h2>
+          <h2 className="recommended-title">You may also Like</h2>
             <Marquee
               pauseOnHover={true}
               pauseOnClick={true}
