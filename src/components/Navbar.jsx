@@ -56,9 +56,14 @@ const Navbar = () => {
     };
 
     return (
-        <nav className={`navbar navbar-expand-lg py-3 fixed-top transition-navbar ${
-            !isHomePage || scrolled ? 'navbar-scrolled' : 'navbar-transparent'
-        }`}>
+        <nav 
+            className={`navbar navbar-expand-lg py-3 fixed-top transition-navbar ${
+                !isHomePage || scrolled ? 'navbar-scrolled' : 'navbar-transparent'
+            }`}
+            style={{
+                backgroundColor: isHomePage && !scrolled ? 'red' : undefined
+            }}
+        >
             <div className="container">
                 {/* Mobile brand on left side */}
                 <NavLink className="navbar-brand fw-bold fs-4 px-2 d-lg-none mobile-brand" to="/"> Artlister</NavLink>
@@ -186,115 +191,19 @@ const Navbar = () => {
     );
 };
 
-
-// Custom dropdown, active nav, and scroll CSS
-const style = document.createElement('style');
-style.innerHTML = `
-    .dropdown-menu.show {
-        display: block;
-        margin-top: 12px;
-        margin-left: 5px;
+// Force styles with highest priority
+const forceStyle = document.createElement('style');
+forceStyle.innerHTML = `
+    nav.navbar.navbar-transparent {
+        background-color: red !important;
+        background: red !important;
     }
     
-    .active-nav-link {
-        text-decoration: underline !important;
-        text-underline-offset: 4px;
-        text-decoration-thickness: 2px;
-        font-weight: 600;
-    }
-    
-    .transition-navbar {
-        transition: all 0.4s ease-in-out;
-        z-index: 1000;
-    }
-    
-    .navbar-transparent {
-        background-color: transparent !important;
-        backdrop-filter: none;
-    }
-    
-    .navbar-transparent .navbar-brand,
-    .navbar-transparent .nav-link,
-    .navbar-transparent .text-dark {
-        color: white !important;
-    }
-    
-    .navbar-scrolled {
-        background-color: rgba(248, 249, 250, 0.95) !important;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-    }
-    
-    .navbar-scrolled .navbar-brand,
-    .navbar-scrolled .nav-link,
-    .navbar-scrolled .text-dark {
-        color: #333 !important;
-    }
-    
-    /* Ensure the main content starts below the navbar */
-    body {
-        padding-top: 80px;
-    }
-    
-    /* Mobile navbar layout */
-    @media (max-width: 991px) {
-        .container {
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-left: 20px;
-            padding-right: 20px;
-        }
-        
-        .mobile-brand {
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        
-        .mobile-right-section {
-            display: flex;
-            align-items: center;
-            z-index: 10;
-        }
-        
-        .mobile-icons {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        /* Ensure mobile icons have proper color inheritance */
-        .mobile-icons .text-dark {
-            color: inherit !important;
-        }
-        
-        .navbar-transparent .mobile-icons .text-dark {
-            color: white !important;
-        }
-        
-        .navbar-scrolled .mobile-icons .text-dark {
-            color: #333 !important;
-        }
-        
-        /* Make sure hamburger button colors are inherited properly */
-        .navbar-transparent .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-        }
-        
-        .navbar-scrolled .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-        }
-    }
-    
-    /* Extra padding for very small screens */
-    @media (max-width: 576px) {
-        .container {
-            padding-left: 15px !important;
-            padding-right: 15px !important;
-        }
+    nav.navbar.navbar-transparent:hover {
+        background-color: black !important;
+        background: black !important;
     }
 `;
-document.head.appendChild(style);
+document.head.appendChild(forceStyle);
 
 export default Navbar;
