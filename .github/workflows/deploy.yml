@@ -35,7 +35,6 @@ jobs:
       
     - name: Create Vercel project configuration
       run: |
-        echo '{"orgId":"${{ secrets.ORG_ID }}","projectId":"${{ secrets.PROJECT_ID }}"}' > .vercel/project.json
         mkdir -p .vercel
         echo '{"orgId":"${{ secrets.ORG_ID }}","projectId":"${{ secrets.PROJECT_ID }}"}' > .vercel/project.json
       
