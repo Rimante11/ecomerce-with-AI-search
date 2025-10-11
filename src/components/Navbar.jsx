@@ -61,7 +61,7 @@ const Navbar = () => {
                 !isHomePage || scrolled ? 'navbar-scrolled' : 'navbar-transparent'
             }`}
             style={{
-                backgroundColor: isHomePage && !scrolled ? 'red' : undefined
+                backgroundColor: isHomePage && !scrolled ? 'transparent' : undefined
             }}
         >
             <div className="container">
@@ -191,19 +191,6 @@ const Navbar = () => {
     );
 };
 
-// Force styles with highest priority
-const forceStyle = document.createElement('style');
-forceStyle.innerHTML = `
-    nav.navbar.navbar-transparent {
-        background-color: red !important;
-        background: red !important;
-    }
-    
-    nav.navbar.navbar-transparent:hover {
-        background-color: black !important;
-        background: black !important;
-    }
-`;
-document.head.appendChild(forceStyle);
+
 
 export default Navbar;

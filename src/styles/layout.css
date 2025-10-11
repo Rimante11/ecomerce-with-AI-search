@@ -100,7 +100,7 @@
 }
 
 .navbar-transparent {
-    background-color: red !important;
+    background-color: transparent !important;
     backdrop-filter: none;
     transition: all 0.3s ease-in-out;
 }
@@ -127,7 +127,7 @@
 .navbar-scrolled .navbar-brand,
 .navbar-scrolled .nav-link,
 .navbar-scrolled .text-dark {
-    color: #333 !important;
+    color: #f7f6f6 !important;
 }
 
 /* Ensure the main content starts below the navbar */
@@ -192,4 +192,45 @@ body {
         padding-left: 15px !important;
         padding-right: 15px !important;
     }
+}
+
+.navbar-nav .nav-link.active, 
+.navbar-nav .nav-link.show,
+.navbar-transparent .navbar-nav .nav-link.active,
+.navbar-transparent .navbar-nav .nav-link.show,
+.navbar-scrolled .navbar-nav .nav-link.active,
+.navbar-scrolled .navbar-nav .nav-link.show {
+    color: white !important;
+}
+
+/* Navbar hover and state styling */
+nav.navbar.navbar-transparent {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+nav.navbar.navbar-transparent .navbar-brand,
+nav.navbar.navbar-transparent .nav-link,
+nav.navbar.navbar-transparent .text-dark,
+nav.navbar.navbar-transparent i {
+    color: white !important;
+}
+
+nav.navbar.navbar-transparent:hover {
+    background-color: white !important;
+    background: white !important;
+}
+
+nav.navbar.navbar-transparent:hover .navbar-brand,
+nav.navbar.navbar-transparent:hover .nav-link,
+nav.navbar.navbar-transparent:hover .text-dark,
+nav.navbar.navbar-transparent:hover i {
+    color: black !important;
+}
+
+nav.navbar.navbar-scrolled .navbar-brand,
+nav.navbar.navbar-scrolled .nav-link,
+nav.navbar.navbar-scrolled .text-dark,
+nav.navbar.navbar-scrolled i {
+    color: black !important;
 }
