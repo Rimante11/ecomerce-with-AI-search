@@ -29,11 +29,13 @@ jobs:
     - name: Run tests (if available)
       run: npm test --if-present
       
-    # Deploy to Vercel using GitHub Action (auto-create project)
+    # Deploy to Vercel using GitHub Action
     - name: Deploy to Vercel
       uses: amondnet/vercel-action@v25
       with:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        vercel-args: '--prod --yes --confirm'
+        vercel-org-id: ${{ secrets.ORG_ID }}
+        vercel-project-id: ${{ secrets.PROJECT_ID }}
+        vercel-args: '--prod --confirm'
         working-directory: ./
