@@ -3,6 +3,8 @@ name: Deploy to Production
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
@@ -29,9 +31,9 @@ jobs:
       
     # Deploy to Vercel using GitHub Action (auto-create project)
     - name: Deploy to Vercel
+      if: github.event_name == 'push'
       uses: amondnet/vercel-action@v25
       with:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
         vercel-args: '--prod --confirm'
         working-directory: ./
