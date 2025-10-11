@@ -29,14 +29,12 @@ jobs:
     - name: Run tests (if available)
       run: npm test --if-present
       
-    # Deploy to Vercel using official CLI
-    - name: Install Vercel CLI
-      run: npm install -g vercel@latest
-      
+    # Deploy to Vercel using GitHub Action
     - name: Deploy to Vercel
-      run: |
-        vercel --prod --yes --force
-      env:
-        VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        VERCEL_ORG_ID: ${{ secrets.ORG_ID }}
-        VERCEL_PROJECT_ID: ${{ secrets.PROJECT_ID }}
+      uses: amondnet/vercel-action@v25
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.ORG_ID }}
+        vercel-project-id: ${{ secrets.PROJECT_ID }}
+        vercel-args: '--prod'
+        working-directory: ./
