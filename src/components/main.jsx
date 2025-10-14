@@ -86,7 +86,7 @@ const Home = () => {
           )}
           <div className="hero-overlay">
             <div className="container">
-              <h5 className="hero-title">Your Cozy Arrivals</h5>
+              <h5 className="hero-title">Your cozy a rrivals</h5>
               <p className="hero-subtitle">
                 Wrap yourself in comfort — where style meets softness.
               </p>
