@@ -18,31 +18,7 @@ const Home = () => {
         top: elementTop,
         behavior: 'smooth'
       });
-      
-      // Alternative: Custom linear scroll if you prefer more control
-      // smoothScrollTo(elementTop, 500);
     }
-  };
-
-  // Fast linear scroll function - no slow start
-  const smoothScrollTo = (targetPosition, duration) => {
-    const startPosition = window.pageYOffset;
-    const distance = targetPosition - startPosition;
-    const startTime = performance.now();
-
-    const animateScroll = (currentTime) => {
-      const timeElapsed = currentTime - startTime;
-      const progress = Math.min(timeElapsed / duration, 1);
-      
-      // Pure linear progress - constant speed throughout
-      window.scrollTo(0, startPosition + distance * progress);
-      
-      if (progress < 1) {
-        requestAnimationFrame(animateScroll);
-      }
-    };
-
-    requestAnimationFrame(animateScroll);
   };
 
   useEffect(() => {
