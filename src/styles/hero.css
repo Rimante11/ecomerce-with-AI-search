@@ -24,6 +24,16 @@
     transform: scale(1.15);
 }
 
+.hero-fallback-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    transform: scale(1.15);
+}
+
 .hero-overlay {
     position: absolute;
     top: 0;
@@ -121,9 +131,24 @@
 }
 
 @media (max-width: 576px) {
-    .hero-video {
+    .hero-video, .hero-fallback-image {
         transform: scale(1.25); /* More aggressive zoom for mobile to crop black borders */
         object-position: center 45%; /* Adjust vertical position if needed */
+        /* Force hardware acceleration on mobile */
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        -webkit-perspective: 1000;
+        perspective: 1000px;
+    }
+    
+    .hero-video {
+        /* Mobile video optimization */
+        -webkit-playsinline: true;
+        /* Reduce quality for better performance */
+        -webkit-transform: translate3d(0, 0, 0) scale(1.25);
+        transform: translate3d(0, 0, 0) scale(1.25);
     }
     
     .hero-title {
