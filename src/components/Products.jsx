@@ -14,11 +14,26 @@ const Products = () => {
   const [data, setData] = useState([]);
   const [filter, setFilter] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [favorites, setFavorites] = useState(new Set()); // Track favorite items
 
   const dispatch = useDispatch();
 
   const addProduct = (product) => {
     dispatch(addCart(product));
+  };
+
+  const toggleFavorite = (productId) => {
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(productId)) {
+        newFavorites.delete(productId);
+        toast.success("Removed from favorites");
+      } else {
+        newFavorites.add(productId);
+        toast.success("Added to favorites");
+      }
+      return newFavorites;
+    });
   };
 
   useEffect(() => {
@@ -121,38 +136,48 @@ const Products = () => {
             >
               <div className="product-card" key={product.id}>
                 <div className="product-image-container">
-                  <img
-                    className="product-image"
-                    src={product.image?.startsWith('/') ? product.image : `/${product.image}`}
-                    alt={product.title}
-                    onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/400x500?text=" + encodeURIComponent(product.title);
-                    }}
-                  />
+                  <Link to={"/product/" + product.id} className="product-image-link">
+                    <img
+                      className="product-image"
+                      src={product.image?.startsWith('/') ? product.image : `/${product.image}`}
+                      alt={product.title}
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/400x500?text=" + encodeURIComponent(product.title);
+                      }}
+                    />
+                  </Link>
                 </div>
                 <div className="product-info">
                   <h5 className="product-title-all">
                     {product.title}
                   </h5>
-                  <p className="product-price">
-                    {product.price} $ 
-                  </p>
-                  <div className="product-buttons">
-                    <Link
-                      to={"/product/" + product.id}
-                      className="btn-custom btn-primary-custom button-buy-now "
-                    >
-                      Buy Now
-                    </Link>
-                    <button
-                      className="btn-custom btn-secondary-custom button-add-cart"
-                      onClick={() => {
-                        toast.success("Added to cart");
-                        addProduct(product);
-                      }}
-                    >
-                      Add to Cart
-                    </button>
+                  <div className="product-bottom">
+                    <p className="product-price">
+                      {product.price} €
+                    </p>
+                    <div className="product-actions">
+                      <button
+                        className={`favorite-icon-btn ${favorites.has(product.id) ? 'favorite-active' : ''}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleFavorite(product.id);
+                        }}
+                      >
+                        <i className={`fa ${favorites.has(product.id) ? 'fa-heart' : 'fa-heart-o'}`}></i>
+                      </button>
+                      <button
+                        className="cart-icon-btn"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toast.success("Added to cart");
+                          addProduct(product);
+                        }}
+                      >
+                        <i className="fa fa-shopping-bag"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
