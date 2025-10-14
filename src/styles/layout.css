@@ -194,14 +194,14 @@ body {
     }
 }
 
-.navbar-nav .nav-link.active, 
+/* .navbar-nav .nav-link.active, 
 .navbar-nav .nav-link.show,
 .navbar-transparent .navbar-nav .nav-link.active,
 .navbar-transparent .navbar-nav .nav-link.show,
 .navbar-scrolled .navbar-nav .nav-link.active,
 .navbar-scrolled .navbar-nav .nav-link.show {
     color: white !important;
-}
+} */
 
 /* Navbar hover and state styling */
 nav.navbar.navbar-transparent {

@@ -1,3 +1,8 @@
+/* Global smooth scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
 /* Hero Section with Full-Screen Video */
 .hero-fullscreen {
     position: relative;
@@ -69,7 +74,7 @@
     border-radius: 40px;
     background-color: #ffffff;
     border-radius: 40px;
-    border: 1px solid #5d5241;;
+    border: 0.1px solid #5d5241;
     height: 40px;
     font-size: 1.6rem;
     display: inline-flex;
@@ -81,19 +86,31 @@
     font-size: 16px;
     margin-top: 16px;
     color: #5d5241;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .hero-button:hover{
-    background-color:  #887960;
+    background-color: #887960;
     border: 1px solid #887960;
     text-decoration: none;
     color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.hero-button:active{
+    transform: translateY(0);
+    transition: all 0.1s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .hero-fullscreen {
-        height: 70vh;
+        height: 100vh;
         margin-top: -80px;
     }
     

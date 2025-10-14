@@ -9,11 +9,40 @@ const Home = () => {
   const scrollToProducts = () => {
     const element = document.getElementById('shop-by-category');
     if (element) {
-      element.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
+      // Calculate the target position with offset for navbar
+      const navbarHeight = 80;
+      const elementTop = element.offsetTop - navbarHeight;
+      
+      // Use browser's native smooth scroll for fastest response
+      window.scrollTo({
+        top: elementTop,
+        behavior: 'smooth'
       });
+      
+      // Alternative: Custom linear scroll if you prefer more control
+      // smoothScrollTo(elementTop, 500);
     }
+  };
+
+  // Fast linear scroll function - no slow start
+  const smoothScrollTo = (targetPosition, duration) => {
+    const startPosition = window.pageYOffset;
+    const distance = targetPosition - startPosition;
+    const startTime = performance.now();
+
+    const animateScroll = (currentTime) => {
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+      
+      // Pure linear progress - constant speed throughout
+      window.scrollTo(0, startPosition + distance * progress);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll);
+      }
+    };
+
+    requestAnimationFrame(animateScroll);
   };
 
   useEffect(() => {
@@ -85,7 +114,13 @@ const Home = () => {
               <p className="hero-subtitle">
                 Wrap yourself in comfort — where style meets softness.
               </p>
-              <button className="hero-button" onClick={scrollToProducts}>
+              <button 
+                className="hero-button" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToProducts();
+                }}
+              >
                 Discover Collection
               </button>
             </div>
