@@ -4,6 +4,7 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
 import { getUsersCollection } from './lib/mongodb.js';
+import bcrypt from 'bcrypt';
 
 // Simple in-memory data (in production, this would connect to a database)
 let products = null;
@@ -275,11 +276,15 @@ async function handleAuth(req, res, endpoint) {
 
           console.log('Creating new user:', email);
           const users = await getUsers();
+          
+          // Hash password before storing
+          const hashedPassword = await bcrypt.hash(password, 12);
+          
           const newUser = {
             id: users.length ? Math.max(...users.map(u => u.id || 0)) + 1 : 1,
             name,
             email,
-            password, // In production, hash passwords (bcrypt/argon2)
+            password: hashedPassword,
             createdAt: new Date().toISOString()
           };
 
@@ -314,7 +319,13 @@ async function handleAuth(req, res, endpoint) {
 
         try {
           const user = await findUserByEmail(email);
-          if (!user || user.password !== password) {
+          if (!user) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+          }
+          
+          // Compare hashed password
+          const isValidPassword = await bcrypt.compare(password, user.password);
+          if (!isValidPassword) {
             return res.status(401).json({ message: 'Invalid credentials' });
           }
 
@@ -356,7 +367,10 @@ async function handleAuth(req, res, endpoint) {
             const { name, password: newPassword } = req.body;
             const updates = {};
             if (name) updates.name = name;
-            if (newPassword) updates.password = newPassword; // hash in production
+            if (newPassword) {
+              // Hash new password before updating
+              updates.password = await bcrypt.hash(newPassword, 12);
+            }
             
             const updatedUser = await updateUser(email, updates);
             if (!updatedUser) {
