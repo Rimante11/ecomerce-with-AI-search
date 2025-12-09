@@ -384,8 +384,24 @@ export default async function handler(req, res) {
     return res.status(200).end();
   }
 
-  // Extract endpoint from query parameters
-  const endpoint = req.query.endpoint || [];
+  // Extract endpoint from query parameters or URL path
+  let endpoint = req.query.endpoint || [];
+  
+  // If endpoint is a string (Vercel format), split it into array
+  if (typeof endpoint === 'string') {
+    endpoint = endpoint.split('/').filter(Boolean);
+  }
+  
+  // Fallback: parse from URL if endpoint is empty
+  if (endpoint.length === 0 && req.url) {
+    const urlPath = req.url.split('?')[0]; // Remove query string
+    const match = urlPath.match(/^\/api\/(.+)$/);
+    if (match) {
+      endpoint = match[1].split('/').filter(Boolean);
+    }
+  }
+  
+  console.log('Endpoint:', endpoint, 'Method:', req.method, 'URL:', req.url);
   const [resource] = endpoint;
 
   // Route to appropriate handler
@@ -397,9 +413,16 @@ export default async function handler(req, res) {
     case 'orders':
       return handleOrders(req, res, endpoint);
     default:
+      console.error('Unknown resource:', resource, 'Full endpoint:', endpoint);
       return res.status(404).json({
         success: false,
         message: 'API endpoint not found',
+        debug: {
+          resource,
+          endpoint,
+          url: req.url,
+          method: req.method
+        },
         availableEndpoints: ['/api/products', '/api/auth', '/api/orders']
       });
   }
