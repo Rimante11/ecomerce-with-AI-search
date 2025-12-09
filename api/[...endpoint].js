@@ -86,6 +86,7 @@ async function findUserByEmail(email) {
 async function createUser(userData) {
   if (useDatabase()) {
     try {
+      console.log('Using database to create user');
       const collection = await getUsersCollection();
       const result = await collection.insertOne({
         ...userData,
@@ -95,18 +96,29 @@ async function createUser(userData) {
       return { ...userData, _id: result.insertedId };
     } catch (err) {
       console.error('Database error, falling back to file system:', err);
-      // Fallback to file system
-      const users = loadUsersFromDisk();
-      users.push(userData);
-      saveUsersToDisk(users);
-      return userData;
+      // Fallback to file system (will fail on Vercel)
+      try {
+        const users = loadUsersFromDisk();
+        users.push(userData);
+        const saved = saveUsersToDisk(users);
+        if (!saved) {
+          throw new Error('File system save failed - MONGODB_URI required for production');
+        }
+        return userData;
+      } catch (fsErr) {
+        console.error('File system fallback also failed:', fsErr);
+        throw new Error('Cannot save user - MONGODB_URI environment variable required for production deployment');
+      }
     }
   }
-  // File system mode
+  // File system mode (local development only)
+  console.log('Using file system to create user');
   const users = loadUsersFromDisk();
   users.push(userData);
   const saved = saveUsersToDisk(users);
-  if (!saved) throw new Error('Failed to save user');
+  if (!saved) {
+    throw new Error('Failed to save user to file system - check write permissions or set MONGODB_URI for production');
+  }
   return userData;
 }
 
@@ -253,11 +265,15 @@ async function handleAuth(req, res, endpoint) {
         }
 
         try {
+          console.log('Registration attempt for:', email);
+          
           const existingUser = await findUserByEmail(email);
           if (existingUser) {
+            console.log('User already exists:', email);
             return res.status(400).json({ message: 'User already exists' });
           }
 
+          console.log('Creating new user:', email);
           const users = await getUsers();
           const newUser = {
             id: users.length ? Math.max(...users.map(u => u.id || 0)) + 1 : 1,
@@ -268,6 +284,7 @@ async function handleAuth(req, res, endpoint) {
           };
 
           await createUser(newUser);
+          console.log('User created successfully:', email);
 
           const { password: _, ...userWithoutPassword } = newUser;
           return res.status(201).json({
@@ -277,7 +294,12 @@ async function handleAuth(req, res, endpoint) {
           });
         } catch (err) {
           console.error('Registration error:', err);
-          return res.status(500).json({ message: 'Failed to register user' });
+          console.error('Error stack:', err.stack);
+          return res.status(500).json({ 
+            message: 'Failed to register user',
+            error: process.env.NODE_ENV === 'development' ? err.message : 'Server error',
+            hint: !process.env.MONGODB_URI ? 'MONGODB_URI not configured - database required for production' : undefined
+          });
         }
       }
       break;
