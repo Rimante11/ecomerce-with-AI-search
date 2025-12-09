@@ -42,7 +42,7 @@ Use MongoDB Atlas (free tier) for production user storage. The code now supports
 6. Replace `<password>` with your database user password
 7. Add database name before the `?`:
    ```
-   mongodb+srv://ecommerce-user:YOUR_PASSWORD@cluster0.xxxxx.mongodb.net/ecommerce?retryWrites=true&w=majority
+   mongodb+srv://<USERNAME>:<PASSWORD>@<CLUSTER-ID>.mongodb.net/<DATABASE>?retryWrites=true&w=majority
    ```
 
 ### 5. Add to Vercel Environment Variables

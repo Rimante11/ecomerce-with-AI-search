@@ -39,7 +39,7 @@ If MongoDB connection fails, the system automatically falls back to file system 
    - Create a free M0 cluster
 
 2. **Get Connection String**
-   - Format: `mongodb+srv://username:password@cluster.mongodb.net/ecommerce?retryWrites=true`
+   - Format: `mongodb+srv://<USERNAME>:<PASSWORD>@<CLUSTER>.mongodb.net/<DATABASE>?retryWrites=true`
    - See `MONGODB_SETUP.md` for detailed steps
 
 3. **Add to Vercel**
