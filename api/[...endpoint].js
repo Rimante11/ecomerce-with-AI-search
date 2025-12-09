@@ -3,6 +3,7 @@
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join, dirname } from 'path';
+import { getUsersCollection } from './lib/mongodb.js';
 
 // Simple in-memory data (in production, this would connect to a database)
 let products = null;
@@ -51,6 +52,101 @@ function saveUsersToDisk(usersArray) {
   }
 }
 
+// Database-aware user operations with fallback to file system
+const useDatabase = () => !!process.env.MONGODB_URI;
+
+async function getUsers() {
+  if (useDatabase()) {
+    try {
+      const collection = await getUsersCollection();
+      return await collection.find({}).toArray();
+    } catch (err) {
+      console.error('Database error, falling back to file system:', err);
+      return loadUsersFromDisk();
+    }
+  }
+  return loadUsersFromDisk();
+}
+
+async function findUserByEmail(email) {
+  if (useDatabase()) {
+    try {
+      const collection = await getUsersCollection();
+      return await collection.findOne({ email });
+    } catch (err) {
+      console.error('Database error, falling back to file system:', err);
+      const users = loadUsersFromDisk();
+      return users.find(u => u.email === email);
+    }
+  }
+  const users = loadUsersFromDisk();
+  return users.find(u => u.email === email);
+}
+
+async function createUser(userData) {
+  if (useDatabase()) {
+    try {
+      const collection = await getUsersCollection();
+      const result = await collection.insertOne({
+        ...userData,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+      return { ...userData, _id: result.insertedId };
+    } catch (err) {
+      console.error('Database error, falling back to file system:', err);
+      // Fallback to file system
+      const users = loadUsersFromDisk();
+      users.push(userData);
+      saveUsersToDisk(users);
+      return userData;
+    }
+  }
+  // File system mode
+  const users = loadUsersFromDisk();
+  users.push(userData);
+  const saved = saveUsersToDisk(users);
+  if (!saved) throw new Error('Failed to save user');
+  return userData;
+}
+
+async function updateUser(email, updates) {
+  if (useDatabase()) {
+    try {
+      const collection = await getUsersCollection();
+      const result = await collection.findOneAndUpdate(
+        { email },
+        { 
+          $set: { 
+            ...updates, 
+            updatedAt: new Date() 
+          } 
+        },
+        { returnDocument: 'after' }
+      );
+      return result;
+    } catch (err) {
+      console.error('Database error, falling back to file system:', err);
+      // Fallback to file system
+      const users = loadUsersFromDisk();
+      const userIndex = users.findIndex(u => u.email === email);
+      if (userIndex === -1) return null;
+      users[userIndex] = { ...users[userIndex], ...updates, updatedAt: new Date().toISOString() };
+      saveUsersToDisk(users);
+      return users[userIndex];
+    }
+  }
+  // File system mode
+  const users = loadUsersFromDisk();
+  const userIndex = users.findIndex(u => u.email === email);
+  if (userIndex === -1) return null;
+  users[userIndex] = { ...users[userIndex], ...updates, updatedAt: new Date().toISOString() };
+  const saved = saveUsersToDisk(users);
+  if (!saved) throw new Error('Failed to update user');
+  return users[userIndex];
+}
+
+
 // Helper function to get products data
 const getProducts = () => {
   if (!products) {
@@ -96,47 +192,6 @@ const findUser = (email) => {
   const usersArr = loadUsersFromDisk();
   return usersArr.find(user => user.email === email);
 };
-
-// Main API handler
-export default function handler(req, res) {
-  const { method, query } = req;
-  const { endpoint } = query;
-
-  // Enable CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  if (method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  try {
-    // Route handling based on endpoint parameter
-    switch (endpoint[0]) {
-      // PRODUCT ROUTES
-      case 'products':
-        return handleProducts(req, res, query.endpoint);
-      
-      // USER/AUTH ROUTES  
-      case 'auth':
-        return handleAuth(req, res, query.endpoint);
-        
-      // ORDER ROUTES
-      case 'orders':
-        return handleOrders(req, res, query.endpoint);
-        
-      default:
-        return res.status(404).json({ message: 'Endpoint not found' });
-    }
-  } catch (error) {
-    console.error('API Error:', error);
-    return res.status(500).json({ 
-      message: 'Internal server error',
-      error: process.env.NODE_ENV === 'development' ? error.message : 'Server error'
-    });
-  }
-}
 
 // Product handlers
 function handleProducts(req, res, endpoint) {
@@ -185,7 +240,7 @@ function handleProducts(req, res, endpoint) {
 }
 
 // Authentication handlers
-function handleAuth(req, res, endpoint) {
+async function handleAuth(req, res, endpoint) {
   const [, action] = endpoint;
 
   switch (action) {
@@ -197,31 +252,33 @@ function handleAuth(req, res, endpoint) {
           return res.status(400).json({ message: 'All fields are required' });
         }
 
-        const usersArr = loadUsersFromDisk();
-        if (usersArr.find(u => u.email === email)) {
-          return res.status(400).json({ message: 'User already exists' });
+        try {
+          const existingUser = await findUserByEmail(email);
+          if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
+          }
+
+          const users = await getUsers();
+          const newUser = {
+            id: users.length ? Math.max(...users.map(u => u.id || 0)) + 1 : 1,
+            name,
+            email,
+            password, // In production, hash passwords (bcrypt/argon2)
+            createdAt: new Date().toISOString()
+          };
+
+          await createUser(newUser);
+
+          const { password: _, ...userWithoutPassword } = newUser;
+          return res.status(201).json({
+            success: true,
+            message: 'User registered successfully',
+            user: userWithoutPassword
+          });
+        } catch (err) {
+          console.error('Registration error:', err);
+          return res.status(500).json({ message: 'Failed to register user' });
         }
-
-        const newUser = {
-          id: usersArr.length ? Math.max(...usersArr.map(u => u.id)) + 1 : 1,
-          name,
-          email,
-          password, // In production, hash passwords (bcrypt/argon2)
-          createdAt: new Date().toISOString()
-        };
-
-        usersArr.push(newUser);
-        const saved = saveUsersToDisk(usersArr);
-        if (!saved) {
-          return res.status(500).json({ message: 'Failed to persist user' });
-        }
-
-        const { password: _, ...userWithoutPassword } = newUser;
-        return res.status(201).json({
-          success: true,
-          message: 'User registered successfully',
-          user: userWithoutPassword
-        });
       }
       break;
       
@@ -233,18 +290,22 @@ function handleAuth(req, res, endpoint) {
           return res.status(400).json({ message: 'Email and password are required' });
         }
 
-        const usersArr = loadUsersFromDisk();
-        const user = usersArr.find(u => u.email === email);
-        if (!user || user.password !== password) {
-          return res.status(401).json({ message: 'Invalid credentials' });
-        }
+        try {
+          const user = await findUserByEmail(email);
+          if (!user || user.password !== password) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+          }
 
-        const { password: _, ...userWithoutPassword } = user;
-        return res.json({
-          success: true,
-          message: 'Login successful',
-          user: userWithoutPassword
-        });
+          const { password: _, ...userWithoutPassword } = user;
+          return res.json({
+            success: true,
+            message: 'Login successful',
+            user: userWithoutPassword
+          });
+        } catch (err) {
+          console.error('Login error:', err);
+          return res.status(500).json({ message: 'Login failed' });
+        }
       }
       break;
       
@@ -253,33 +314,39 @@ function handleAuth(req, res, endpoint) {
       // PUT /api/auth/user/:email  -> update user fields (name, password)
       {
         const [, , email] = endpoint;
-        const usersArr = loadUsersFromDisk();
-        const userIndex = usersArr.findIndex(u => u.email === email);
 
         if (req.method === 'GET') {
-          if (userIndex === -1) {
-            return res.status(404).json({ message: 'User not found' });
+          try {
+            const user = await findUserByEmail(email);
+            if (!user) {
+              return res.status(404).json({ message: 'User not found' });
+            }
+            const { password: _, ...userWithoutPassword } = user;
+            return res.json(userWithoutPassword);
+          } catch (err) {
+            console.error('Get user error:', err);
+            return res.status(500).json({ message: 'Failed to fetch user' });
           }
-          const { password: _, ...userWithoutPassword } = usersArr[userIndex];
-          return res.json(userWithoutPassword);
         }
 
         if (req.method === 'PUT' || req.method === 'PATCH') {
-          if (userIndex === -1) {
-            return res.status(404).json({ message: 'User not found' });
-          }
-          const { name, password: newPassword } = req.body;
-          if (name) usersArr[userIndex].name = name;
-          if (newPassword) usersArr[userIndex].password = newPassword; // hash in production
-          usersArr[userIndex].updatedAt = new Date().toISOString();
+          try {
+            const { name, password: newPassword } = req.body;
+            const updates = {};
+            if (name) updates.name = name;
+            if (newPassword) updates.password = newPassword; // hash in production
+            
+            const updatedUser = await updateUser(email, updates);
+            if (!updatedUser) {
+              return res.status(404).json({ message: 'User not found' });
+            }
 
-          const saved = saveUsersToDisk(usersArr);
-          if (!saved) {
-            return res.status(500).json({ message: 'Failed to persist changes' });
+            const { password: _, ...userWithoutPassword } = updatedUser;
+            return res.json({ success: true, user: userWithoutPassword });
+          } catch (err) {
+            console.error('Update user error:', err);
+            return res.status(500).json({ message: 'Failed to update user' });
           }
-
-          const { password: _, ...userWithoutPassword } = usersArr[userIndex];
-          return res.json({ success: true, user: userWithoutPassword });
         }
       }
       break;
@@ -302,5 +369,38 @@ function handleOrders(req, res, endpoint) {
       
     default:
       return res.status(405).json({ message: 'Method not allowed' });
+  }
+}
+
+// Main handler
+export default async function handler(req, res) {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  // Extract endpoint from query parameters
+  const endpoint = req.query.endpoint || [];
+  const [resource] = endpoint;
+
+  // Route to appropriate handler
+  switch (resource) {
+    case 'products':
+      return handleProducts(req, res, endpoint);
+    case 'auth':
+      return await handleAuth(req, res, endpoint);
+    case 'orders':
+      return handleOrders(req, res, endpoint);
+    default:
+      return res.status(404).json({
+        success: false,
+        message: 'API endpoint not found',
+        availableEndpoints: ['/api/products', '/api/auth', '/api/orders']
+      });
   }
 }
