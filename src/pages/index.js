@@ -10,3 +10,4 @@ export { default as Checkout } from './Checkout';
 export { default as PageNotFound } from './PageNotFound';
 export { default as BankID } from './BankID';
 export { default as PrivacyPolicy } from './PrivacyPolicy';
+export { default as Profile } from './Profile';

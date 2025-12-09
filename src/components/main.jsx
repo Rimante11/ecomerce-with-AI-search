@@ -63,7 +63,7 @@ const Home = () => {
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="auto"
               poster="/assets/images/placeholder.png"
               onError={() => setVideoError(true)}
               onLoadedData={() => {

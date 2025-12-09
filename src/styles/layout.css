@@ -234,3 +234,9 @@ nav.navbar.navbar-scrolled .text-dark,
 nav.navbar.navbar-scrolled i {
     color: black !important;
 }
+
+.username-button{
+    padding: 8px 36px !important;
+    background-color: #f2f1f19c !important;
+    border-radius: 30px !important;
+}

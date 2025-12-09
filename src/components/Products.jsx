@@ -140,6 +140,8 @@ const Products = () => {
                     <img
                       className="product-image"
                       src={product.image?.startsWith('/') ? product.image : `/${product.image}`}
+                      loading="lazy"
+                      decoding="async"
                       alt={product.title}
                       onError={(e) => {
                         e.target.src = "https://via.placeholder.com/400x500?text=" + encodeURIComponent(product.title);

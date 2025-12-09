@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "Lunasita",
+    "email": "lunasita@gmail.com",
+    "password": "lunasita12345!",
+    "createdAt": "2025-12-08T11:16:01.607Z",
+    "updatedAt": "2025-12-08T11:42:05.217Z"
+  },
+  {
+    "id": 2,
+    "name": "Testson",
+    "email": "testson@gmail.com",
+    "password": "testson12345",
+    "createdAt": "2025-12-08T11:45:53.762Z"
+  }
+]

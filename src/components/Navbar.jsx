@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
 import "../styles/layout.css";
 
 const Navbar = () => {
@@ -52,6 +53,8 @@ const Navbar = () => {
     const handleLogout = () => {
         localStorage.removeItem('user');
         setUser(null);
+        setShowDropdown(false);
+        toast.success('Logged out successfully');
         navigate('/login');
     };
 
@@ -79,20 +82,25 @@ const Navbar = () => {
                         
                         {/* User Icon */}
                         {user ? (
-                            <div className="d-inline position-relative">
+                            <div 
+                                className="d-inline position-relative"
+                            >
                                 <button
                                     className="btn p-0 text-dark me-2"
-                                    onClick={() => setShowDropdown(!showDropdown)}
                                     style={{ fontSize: '18px', background: 'none', border: 'none' }}
+                                    onMouseEnter={() => setShowDropdown(true)}
                                 >
                                     <i className="fa fa-user"></i>
                                 </button>
                                 {showDropdown && (
                                     <div
                                         className="dropdown-menu show"
-                                        style={{ position: "absolute", top: "100%", right: 0 }}
+                                        style={{ position: "absolute", top: "100%", right: 0, zIndex: 1050 }}
+                                        onMouseLeave={() => setShowDropdown(false)}
                                     >
-                                        <span className="dropdown-item-text">{user.name}</span>
+                                        <NavLink className="dropdown-item" to="/profile" onClick={() => setShowDropdown(false)}>
+                                            <i className="fa fa-user-circle mr-1"></i> Profile
+                                        </NavLink>
                                         <button className="dropdown-item" onClick={handleLogout}>
                                             <i className="fa fa-sign-out-alt mr-1"></i> Logout
                                         </button>
@@ -146,35 +154,7 @@ const Navbar = () => {
                         <NavLink to="/search" className="text-dark mx-3" style={{ fontSize: '20px' }}>
                             <i className="fa fa-search"></i>
                         </NavLink>
-                        
-                        {/* User Icon */}
-                        {user ? (
-                            <div className="d-inline position-relative">
-                                <button
-                                    className="btn p-0 text-dark mx-3"
-                                    onClick={() => setShowDropdown(!showDropdown)}
-                                    style={{ fontSize: '20px', background: 'none', border: 'none' }}
-                                >
-                                    <i className="fa fa-user"></i>
-                                </button>
-                                {showDropdown && (
-                                    <div
-                                        className="dropdown-menu show"
-                                        style={{ position: "absolute", top: "100%", left: 0 }}
-                                    >
-                                        <span className="dropdown-item-text">{user.name}</span>
-                                        <button className="dropdown-item" onClick={handleLogout}>
-                                            <i className="fa fa-sign-out-alt mr-1"></i> Logout
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        ) : (
-                            <NavLink to="/login" className="text-dark mx-3" style={{ fontSize: '20px' }}>
-                                <i className="fa fa-user"></i>
-                            </NavLink>
-                        )}
-                        
+
                         {/* Cart Icon */}
                         <NavLink to="/cart" className="text-dark mx-3 position-relative" style={{ fontSize: '20px' }}>
                             <i className="fa fa-shopping-cart"></i>
@@ -184,6 +164,39 @@ const Navbar = () => {
                                 </span>
                             )}
                         </NavLink>
+                        
+                        {/* User Icon */}
+                        {user ? (
+                            <div 
+                                className="d-inline position-relative"
+                            >
+                                <button
+                                    className="btn p-0 text-dark mx-3 username-button"
+                                    style={{ fontSize: '20px', background: 'none', border: 'none' }}
+                                    onMouseEnter={() => setShowDropdown(true)}
+                                >
+                                    {user.name} <i className="fa fa-user"></i>
+                                </button>
+                                {showDropdown && (
+                                    <div
+                                        className="dropdown-menu show"
+                                        style={{ position: "absolute", top: "100%", left: 0, zIndex: 1050 }}
+                                        onMouseLeave={() => setShowDropdown(false)}
+                                    >                                            <NavLink className="dropdown-item" to="/profile" onClick={() => setShowDropdown(false)}>
+                                                <i className="fa fa-user-circle mr-1"></i> Profile
+                                            </NavLink>
+                                            <button className="dropdown-item" onClick={handleLogout}>
+                                                <i className="fa fa-sign-out-alt mr-1"></i> Logout
+                                            </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <NavLink to="/login" className="text-dark mx-3" style={{ fontSize: '20px' }}>
+                                <i className="fa fa-user"></i>
+                            </NavLink>
+                        )}
+                        
                     </div>
                 </div>
             </div>

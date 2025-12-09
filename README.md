@@ -1,4 +1,6 @@
 ## Run Locally
+To RUN locally need to run both frontend and backend servers: 
+lsof -ti:3000 | xargs kill -9 2>/dev/null; lsof -ti:5001 | xargs kill -9 2>/dev/null; sleep 1; npm run dev 
 
 Clone the project
 

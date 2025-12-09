@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Footer, Navbar } from "../components";
+import toast from 'react-hot-toast';
 import '../styles/layout.css';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
@@ -26,11 +25,10 @@ const Login = () => {
       if (res.ok) {
         console.log("My DATA:", JSON.stringify(data));
         // Save both name and email from backend response
-        localStorage.setItem('user', JSON.stringify({ email}));
-        setSuccess("Login successful!");
-        setEmail("");
-        setPassword("");
-        setTimeout(() => navigate("/"), 1500);
+        const userToStore = { email: data.user?.email || email, name: data.user?.name || '' };
+        localStorage.setItem('user', JSON.stringify(userToStore));
+        toast.success("Login successful!");
+        navigate("/");
       } else {
         setError(data.message || "Login failed");
       }
@@ -74,7 +72,6 @@ const Login = () => {
                 />
               </div>
               {error && <div className="alert alert-danger">{error}</div>}
-              {success && <div className="alert alert-success">{success}</div>}
               <div className="my-3">
                 <p>New Here? <Link to="/register" className="text-decoration-underline text-info">Register</Link> </p>
               </div>

@@ -1,12 +1,55 @@
 // Consolidated API Handler for Vercel Deployment
 // This single file handles all API routes to stay within Vercel's 12 function limit
 
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join, dirname } from 'path';
 
 // Simple in-memory data (in production, this would connect to a database)
 let products = null;
-let users = [];
+
+// users are persisted to disk in `data/users.json` when possible
+const usersFileCandidates = [
+  join(process.cwd(), 'data', 'users.json'),
+  join(process.cwd(), 'api', 'users.json'),
+  join(process.cwd(), 'public', 'data', 'users.json')
+];
+
+function findUsersFilePath() {
+  for (const p of usersFileCandidates) {
+    if (existsSync(p)) return p;
+  }
+  // default to first candidate (will be created if missing)
+  return usersFileCandidates[0];
+}
+
+function loadUsersFromDisk() {
+  try {
+    const path = findUsersFilePath();
+    if (existsSync(path)) {
+      const raw = readFileSync(path, 'utf8');
+      return JSON.parse(raw || '[]');
+    }
+  } catch (err) {
+    console.error('Failed to load users from disk:', err);
+  }
+  return [];
+}
+
+function saveUsersToDisk(usersArray) {
+  try {
+    const path = findUsersFilePath();
+    // Ensure directory exists
+    const dir = dirname(path);
+    if (!existsSync(dir)) {
+      mkdirSync(dir, { recursive: true });
+    }
+    writeFileSync(path, JSON.stringify(usersArray, null, 2), 'utf8');
+    return true;
+  } catch (err) {
+    console.error('Failed to save users to disk:', err);
+    return false;
+  }
+}
 
 // Helper function to get products data
 const getProducts = () => {
@@ -19,9 +62,9 @@ const getProducts = () => {
       let productsPath = apiPath;
       
       // Check which path exists
-      if (require('fs').existsSync(apiPath)) {
+      if (existsSync(apiPath)) {
         productsPath = apiPath;
-      } else if (require('fs').existsSync(publicPath)) {
+      } else if (existsSync(publicPath)) {
         productsPath = publicPath;
       }
       
@@ -48,9 +91,10 @@ const getProducts = () => {
   return products;
 };
 
-// Helper function to find user by email
+// Helper function to find user by email (reads from disk)
 const findUser = (email) => {
-  return users.find(user => user.email === email);
+  const usersArr = loadUsersFromDisk();
+  return usersArr.find(user => user.email === email);
 };
 
 // Main API handler
@@ -148,25 +192,30 @@ function handleAuth(req, res, endpoint) {
     case 'register':
       if (req.method === 'POST') {
         const { name, email, password } = req.body;
-        
+
         if (!name || !email || !password) {
           return res.status(400).json({ message: 'All fields are required' });
         }
-        
-        if (findUser(email)) {
+
+        const usersArr = loadUsersFromDisk();
+        if (usersArr.find(u => u.email === email)) {
           return res.status(400).json({ message: 'User already exists' });
         }
-        
+
         const newUser = {
-          id: users.length + 1,
+          id: usersArr.length ? Math.max(...usersArr.map(u => u.id)) + 1 : 1,
           name,
           email,
-          password, // In production, this should be hashed
+          password, // In production, hash passwords (bcrypt/argon2)
           createdAt: new Date().toISOString()
         };
-        
-        users.push(newUser);
-        
+
+        usersArr.push(newUser);
+        const saved = saveUsersToDisk(usersArr);
+        if (!saved) {
+          return res.status(500).json({ message: 'Failed to persist user' });
+        }
+
         const { password: _, ...userWithoutPassword } = newUser;
         return res.status(201).json({
           success: true,
@@ -179,16 +228,17 @@ function handleAuth(req, res, endpoint) {
     case 'login':
       if (req.method === 'POST') {
         const { email, password } = req.body;
-        
+
         if (!email || !password) {
           return res.status(400).json({ message: 'Email and password are required' });
         }
-        
-        const user = findUser(email);
+
+        const usersArr = loadUsersFromDisk();
+        const user = usersArr.find(u => u.email === email);
         if (!user || user.password !== password) {
           return res.status(401).json({ message: 'Invalid credentials' });
         }
-        
+
         const { password: _, ...userWithoutPassword } = user;
         return res.json({
           success: true,
@@ -199,16 +249,38 @@ function handleAuth(req, res, endpoint) {
       break;
       
     case 'user':
-      if (req.method === 'GET') {
+      // GET /api/auth/user/:email  -> returns user
+      // PUT /api/auth/user/:email  -> update user fields (name, password)
+      {
         const [, , email] = endpoint;
-        const user = findUser(email);
-        
-        if (!user) {
-          return res.status(404).json({ message: 'User not found' });
+        const usersArr = loadUsersFromDisk();
+        const userIndex = usersArr.findIndex(u => u.email === email);
+
+        if (req.method === 'GET') {
+          if (userIndex === -1) {
+            return res.status(404).json({ message: 'User not found' });
+          }
+          const { password: _, ...userWithoutPassword } = usersArr[userIndex];
+          return res.json(userWithoutPassword);
         }
-        
-        const { password: _, ...userWithoutPassword } = user;
-        return res.json(userWithoutPassword);
+
+        if (req.method === 'PUT' || req.method === 'PATCH') {
+          if (userIndex === -1) {
+            return res.status(404).json({ message: 'User not found' });
+          }
+          const { name, password: newPassword } = req.body;
+          if (name) usersArr[userIndex].name = name;
+          if (newPassword) usersArr[userIndex].password = newPassword; // hash in production
+          usersArr[userIndex].updatedAt = new Date().toISOString();
+
+          const saved = saveUsersToDisk(usersArr);
+          if (!saved) {
+            return res.status(500).json({ message: 'Failed to persist changes' });
+          }
+
+          const { password: _, ...userWithoutPassword } = usersArr[userIndex];
+          return res.json({ success: true, user: userWithoutPassword });
+        }
       }
       break;
   }
